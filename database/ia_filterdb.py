@@ -14,9 +14,22 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 
-client = AsyncIOMotorClient(DATABASE_URI)
-db = client[DATABASE_NAME]
-instance = Instance.from_db(db)
+if DATABASE_URI:
+    client = AsyncIOMotorClient(DATABASE_URI)
+else:
+    client = None
+
+db = client[DATABASE_NAME] if client else None
+
+from umongo.instance import Instance
+class MockInstance:
+    def register(self, cls):
+        return cls
+
+if db:
+    instance = Instance.from_db(db)
+else:
+    instance = MockInstance()
 
 @instance.register
 class Media(Document):

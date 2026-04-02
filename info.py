@@ -33,7 +33,7 @@ SUBSCRIPTION = (environ.get('SUBSCRIPTION', 'https://telegra.ph/file/734170f40b8
 CODE = (environ.get('CODE', 'https://telegra.ph/file/72f425007b22d28bd935e.jpg'))
 
 # Admins, Channels & Users
-PREMIUM_AND_REFERAL_MODE = bool(environ.get('PREMIUM_AND_REFERAL_MODE', True)) # Set Ture Or False
+PREMIUM_AND_REFERAL_MODE = is_enabled(environ.get('PREMIUM_AND_REFERAL_MODE', "True"), True) # Set Ture Or False
 
 # If PREMIUM_AND_REFERAL_MODE is True Then Fill Below Variable, If Flase Then No Need To Fill.
 REFERAL_COUNT = int(environ.get('REFERAL_COUNT', '5')) # number of referal count
@@ -51,7 +51,7 @@ support_chat_id = environ.get('SUPPORT_CHAT_ID', '-1001926473981')
 reqst_channel = environ.get('REQST_CHANNEL_ID', '')
 REQST_CHANNEL = int(reqst_channel) if reqst_channel and id_pattern.search(reqst_channel) else None
 SUPPORT_CHAT_ID = int(support_chat_id) if support_chat_id and id_pattern.search(support_chat_id) else None
-NO_RESULTS_MSG = bool(environ.get("NO_RESULTS_MSG", True))
+NO_RESULTS_MSG = is_enabled(environ.get("NO_RESULTS_MSG", "True"), True)
 
 # MongoDB information
 DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://ltarak570_db_user:zAIRPn92DgjoVZsl@cluster0.bmrg5lf.mongodb.net/?appName=Cluster0")
@@ -67,7 +67,7 @@ SHORTLINK_URL = environ.get('SHORTLINK_URL', 'Onepageyam.com')
 SHORTLINK_API = environ.get('SHORTLINK_API', 'bafd8f1a3ee9231e9d3484e858ad1d79cc558be3')
 SECOND_SHORTLINK_URL = environ.get('SECOND_SHORTLINK_URL', 'Onepageyam.com')
 SECOND_SHORTLINK_API = environ.get('SECOND_SHORTLINK_API', 'bafd8f1a3ee9231e9d3484e858ad1d79cc558be3')
-IS_SHORTLINK = bool(environ.get('IS_SHORTLINK', True))
+IS_SHORTLINK = is_enabled(environ.get('IS_SHORTLINK', "True"), True)
 DELETE_CHANNELS = [int(dch) if id_pattern.search(dch) else dch for dch in environ.get('DELETE_CHANNELS', '0').split()]
 MAX_B_TN = environ.get("MAX_B_TN", "5")
 MAX_BTN = is_enabled((environ.get('MAX_BTN', "True")), True)
@@ -75,9 +75,10 @@ PORT = environ.get("PORT", "8080")
 GRP_LNK = environ.get('GRP_LNK', 'https://t.me/+ps2An00KwZYwNTRl')
 CHNL_LNK = environ.get('CHNL_LNK', 'https://t.me/hbbotz')
 TUTORIAL = environ.get('TUTORIAL', 'https://t.me/Verifying5754/9')
-IS_TUTORIAL = bool(environ.get('IS_TUTORIAL', True))
+IS_TUTORIAL = is_enabled(environ.get('IS_TUTORIAL', "True"), True)
 MSG_ALRT = environ.get('MSG_ALRT', 'Wʜᴀᴛ Aʀᴇ Yᴏᴜ Lᴏᴏᴋɪɴɢ Aᴛ ?')
-LOG_CHANNEL = int(environ.get('LOG_CHANNEL', '-1001978482047'))
+log_channel = environ.get('LOG_CHANNEL', '-1001978482047')
+LOG_CHANNEL = int(log_channel) if log_channel and id_pattern.search(log_channel) else -1001978482047
 SUPPORT_CHAT = environ.get('SUPPORT_CHAT', '+r9ArDaaCETE0OGU9')
 P_TTI_SHOW_OFF = is_enabled((environ.get('P_TTI_SHOW_OFF', "False")), False)
 IMDB = is_enabled((environ.get('IMDB', "False")), False)
@@ -97,7 +98,8 @@ PROTECT_CONTENT = is_enabled((environ.get('PROTECT_CONTENT', "False")), False)
 PUBLIC_FILE_STORE = is_enabled((environ.get('PUBLIC_FILE_STORE', "True")), True)
 
 # add premium logs channel id
-PREMIUM_LOGS = int(environ.get('PREMIUM_LOGS', ''))
+premium_logs = environ.get('PREMIUM_LOGS', '0')
+PREMIUM_LOGS = int(premium_logs) if premium_logs and id_pattern.search(premium_logs) else 0
 
 LANGUAGES = ["malayalam", "mal", "tamil", "tam" ,"english", "eng", "hindi", "hin", "telugu", "tel", "kannada", "kan"]
 
