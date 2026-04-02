@@ -54,12 +54,12 @@ class Database:
             self._client = motor.motor_asyncio.AsyncIOMotorClient(uri)
         else:
             self._client = None
-        self.db = self._client[database_name] if self._client else None
-        self.col = self.db.users if self.db else None
-        self.grp = self.db.groups if self.db else None
-        self.users = self.db.uersz if self.db else None
-        self.req = self.db.requests if self.db else None
-        self.ref_user = self.db.ref_users if self.db else None
+        self.db = self._client[database_name] if self._client is not None else None
+        self.col = self.db.users if self.db is not None else None
+        self.grp = self.db.groups if self.db is not None else None
+        self.users = self.db.uersz if self.db is not None else None
+        self.req = self.db.requests if self.db is not None else None
+        self.ref_user = self.db.ref_users if self.db is not None else None
 
     async def find_ref_user(self, id):
         return bool(await self.ref_user.find_one({'id': id}))
