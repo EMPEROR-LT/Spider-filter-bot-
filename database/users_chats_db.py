@@ -1,48 +1,65 @@
 # https://github.com/odysseusmax/animated-lamp/blob/master/bot/database/database.py
 import motor.motor_asyncio
-from pymongo import MongoClient
+from pymongo.errors import DuplicateKeyError
 from info import DATABASE_NAME, DATABASE_URI, IMDB, IMDB_TEMPLATE, MELCOW_NEW_USERS, P_TTI_SHOW_OFF, SINGLE_BUTTON, SPELL_CHECK_REPLY, PROTECT_CONTENT, AUTO_DELETE, MAX_BTN, AUTO_FFILTER, SHORTLINK_API, SHORTLINK_URL, IS_SHORTLINK, TUTORIAL, IS_TUTORIAL
 import datetime
 import pytz
 
-my_client = MongoClient(DATABASE_URI)
-mydb = my_client["referal_user"]
+if DATABASE_URI:
+    my_client = motor.motor_asyncio.AsyncIOMotorClient(DATABASE_URI)
+else:
+    my_client = None
 
 async def referal_add_user(user_id, ref_user_id):
+    if my_client is None:
+        return False
+    mydb = my_client["referal_user"]
     user_db = mydb[str(user_id)]
     user = {'_id': ref_user_id}
     try:
-        user_db.insert_one(user)
+        await user_db.insert_one(user)
         return True
     except DuplicateKeyError:
         return False
     
 
 async def get_referal_all_users(user_id):
+    if my_client is None:
+        return []
+    mydb = my_client["referal_user"]
     user_db = mydb[str(user_id)]
     return user_db.find()
     
 async def get_referal_users_count(user_id):
+    if my_client is None:
+        return 0
+    mydb = my_client["referal_user"]
     user_db = mydb[str(user_id)]
-    count = user_db.count_documents({})
+    count = await user_db.count_documents({})
     return count
     
 
 async def delete_all_referal_users(user_id):
+    if my_client is None:
+        return
+    mydb = my_client["referal_user"]
     user_db = mydb[str(user_id)]
-    user_db.delete_many({})
+    await user_db.delete_many({})
     
 
 class Database:
     
     def __init__(self, uri, database_name):
-        self._client = motor.motor_asyncio.AsyncIOMotorClient(uri)
-        self.db = self._client[database_name]
-        self.col = self.db.users
-        self.grp = self.db.groups
-        self.users = self.db.uersz
-        self.req = self.db.requests
-        self.ref_user = self.db.ref_users
+        if uri:
+            self._client = motor.motor_asyncio.AsyncIOMotorClient(uri)
+        else:
+            self._client = None
+        self.db = self._client[database_name] if self._client else None
+        self.col = self.db.users if self.db else None
+        self.grp = self.db.groups if self.db else None
+        self.users = self.db.uersz if self.db else None
+        self.req = self.db.requests if self.db else None
+        self.ref_user = self.db.ref_users if self.db else None
 
     async def find_ref_user(self, id):
         return bool(await self.ref_user.find_one({'id': id}))
@@ -125,6 +142,8 @@ class Database:
 
 
     async def get_banned(self):
+        if self.col is None or self.grp is None:
+            return [], []
         users = self.col.find({'ban_status.is_banned': True})
         chats = self.grp.find({'chat_status.is_disabled': True})
         b_chats = [chat['id'] async for chat in chats]
