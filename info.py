@@ -47,8 +47,8 @@ auth_channel = environ.get('AUTH_CHANNEL', '')
 auth_grp = environ.get('AUTH_GROUP')
 AUTH_CHANNEL = int(auth_channel) if auth_channel and id_pattern.search(auth_channel) else None
 AUTH_GROUPS = [int(ch) for ch in auth_grp.split()] if auth_grp else None
-support_chat_id = environ.get('SUPPORT_CHAT_ID', '-1001926473981')
-reqst_channel = environ.get('REQST_CHANNEL_ID', '')
+support_chat_id = environ.get('SUPPORT_CHAT_ID', '-1002803456095')
+reqst_channel = environ.get('REQST_CHANNEL_ID', '2571645255')
 REQST_CHANNEL = int(reqst_channel) if reqst_channel and id_pattern.search(reqst_channel) else None
 SUPPORT_CHAT_ID = int(support_chat_id) if support_chat_id and id_pattern.search(support_chat_id) else None
 NO_RESULTS_MSG = bool(environ.get("NO_RESULTS_MSG", True))
@@ -56,7 +56,7 @@ NO_RESULTS_MSG = bool(environ.get("NO_RESULTS_MSG", True))
 # MongoDB information
 DATABASE_URI = environ.get('DATABASE_URI', "")
 DATABASE_NAME = environ.get('DATABASE_NAME', "Cluster0")
-COLLECTION_NAME = environ.get('COLLECTION_NAME', 'Hariom')
+COLLECTION_NAME = environ.get('COLLECTION_NAME', 'emperor')
 
 # Others
 VERIFY = bool(environ.get('VERIFY', False)) # Verification On ( True ) / Off ( False )
@@ -64,9 +64,9 @@ HOWTOVERIFY = environ.get('HOWTOVERIFY', 'https://t.me/Verifying5754/9')
 PMFILTER = is_enabled(environ.get('PMFILTER', "True"), True)
 G_FILTER = is_enabled(environ.get("G_FILTER", "True"), True)
 SHORTLINK_URL = environ.get('SHORTLINK_URL', 'Onepageyam.com')
-SHORTLINK_API = environ.get('SHORTLINK_API', 'bafd8f1a3ee9231e9d3484e858ad1d79cc558be3')
+SHORTLINK_API = environ.get('SHORTLINK_API', '')
 SECOND_SHORTLINK_URL = environ.get('SECOND_SHORTLINK_URL', 'Onepageyam.com')
-SECOND_SHORTLINK_API = environ.get('SECOND_SHORTLINK_API', 'bafd8f1a3ee9231e9d3484e858ad1d79cc558be3')
+SECOND_SHORTLINK_API = environ.get('SECOND_SHORTLINK_API', '')
 IS_SHORTLINK = bool(environ.get('IS_SHORTLINK', True))
 DELETE_CHANNELS = [int(dch) if id_pattern.search(dch) else dch for dch in environ.get('DELETE_CHANNELS', '0').split()]
 MAX_B_TN = environ.get("MAX_B_TN", "5")
@@ -77,7 +77,7 @@ CHNL_LNK = environ.get('CHNL_LNK', 'https://t.me/hbbotz')
 TUTORIAL = environ.get('TUTORIAL', 'https://t.me/Verifying5754/9')
 IS_TUTORIAL = bool(environ.get('IS_TUTORIAL', True))
 MSG_ALRT = environ.get('MSG_ALRT', 'Wʜᴀᴛ Aʀᴇ Yᴏᴜ Lᴏᴏᴋɪɴɢ Aᴛ ?')
-LOG_CHANNEL = int(environ.get('LOG_CHANNEL', '-1001978482047'))
+LOG_CHANNEL = int(environ.get('LOG_CHANNEL', '-1002905473240'))
 SUPPORT_CHAT = environ.get('SUPPORT_CHAT', '+r9ArDaaCETE0OGU9')
 P_TTI_SHOW_OFF = is_enabled((environ.get('P_TTI_SHOW_OFF', "False")), False)
 IMDB = is_enabled((environ.get('IMDB', "False")), False)
@@ -97,7 +97,7 @@ PROTECT_CONTENT = is_enabled((environ.get('PROTECT_CONTENT', "False")), False)
 PUBLIC_FILE_STORE = is_enabled((environ.get('PUBLIC_FILE_STORE', "True")), True)
 
 # add premium logs channel id
-PREMIUM_LOGS = int(environ.get('PREMIUM_LOGS', ''))
+PREMIUM_LOGS = int(environ.get('PREMIUM_LOGS', '3174376872'))
 
 LANGUAGES = ["malayalam", "mal", "tamil", "tam" ,"english", "eng", "hindi", "hin", "telugu", "tel", "kannada", "kan"]
 
