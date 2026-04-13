@@ -1,13 +1,15 @@
-FROM python:3.10.8-slim-buster
+FROM python:3.12-slim
 
-RUN apt update && apt upgrade -y
-RUN apt install git -y
+RUN apt-get update && apt-get upgrade -y && \
+    apt-get install -y --no-install-recommends git && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
 COPY requirements.txt /requirements.txt
 
-RUN cd /
 RUN pip3 install -U pip && pip3 install -U -r requirements.txt
-WORKDIR /app
 
+WORKDIR /app
 COPY . .
 
 CMD ["python", "bot.py"]

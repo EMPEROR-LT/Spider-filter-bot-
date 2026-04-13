@@ -1,37 +1,8 @@
 # https://github.com/odysseusmax/animated-lamp/blob/master/bot/database/database.py
 import motor.motor_asyncio
-from pymongo import MongoClient
 from info import DATABASE_NAME, DATABASE_URI, IMDB, IMDB_TEMPLATE, MELCOW_NEW_USERS, P_TTI_SHOW_OFF, SINGLE_BUTTON, SPELL_CHECK_REPLY, PROTECT_CONTENT, AUTO_DELETE, MAX_BTN, AUTO_FFILTER, SHORTLINK_API, SHORTLINK_URL, IS_SHORTLINK, TUTORIAL, IS_TUTORIAL
 import datetime
-import pytz
-
-my_client = MongoClient(DATABASE_URI)
-mydb = my_client["referal_user"]
-
-async def referal_add_user(user_id, ref_user_id):
-    user_db = mydb[str(user_id)]
-    user = {'_id': ref_user_id}
-    try:
-        user_db.insert_one(user)
-        return True
-    except DuplicateKeyError:
-        return False
-    
-
-async def get_referal_all_users(user_id):
-    user_db = mydb[str(user_id)]
-    return user_db.find()
-    
-async def get_referal_users_count(user_id):
-    user_db = mydb[str(user_id)]
-    count = user_db.count_documents({})
-    return count
-    
-
-async def delete_all_referal_users(user_id):
-    user_db = mydb[str(user_id)]
-    user_db.delete_many({})
-    
+from pymongo.errors import DuplicateKeyError
 
 class Database:
     
@@ -43,6 +14,29 @@ class Database:
         self.users = self.db.uersz
         self.req = self.db.requests
         self.ref_user = self.db.ref_users
+        self.referal_db = self._client["referal_user"]
+
+    async def referal_add_user(self, user_id, ref_user_id):
+        user_db = self.referal_db[str(user_id)]
+        user = {'_id': ref_user_id}
+        try:
+            await user_db.insert_one(user)
+            return True
+        except DuplicateKeyError:
+            return False
+
+    async def get_referal_all_users(self, user_id):
+        user_db = self.referal_db[str(user_id)]
+        return user_db.find()
+
+    async def get_referal_users_count(self, user_id):
+        user_db = self.referal_db[str(user_id)]
+        count = await user_db.count_documents({})
+        return count
+
+    async def delete_all_referal_users(self, user_id):
+        user_db = self.referal_db[str(user_id)]
+        await user_db.delete_many({})
 
     async def find_ref_user(self, id):
         return bool(await self.ref_user.find_one({'id': id}))
@@ -50,12 +44,12 @@ class Database:
     async def add_ref_user(self, id):
         await self.ref_user.insert_one({'id': id})
 
-    
     async def find_join_req(self, id):
         return bool(await self.req.find_one({'id': id}))
         
     async def add_join_req(self, id):
         await self.req.insert_one({'id': id})
+
     async def del_join_req(self):
         await self.req.drop()
 
@@ -68,7 +62,6 @@ class Database:
                 ban_reason="",
             ),
         )
-
 
     def new_group(self, id, title):
         return dict(
@@ -119,10 +112,8 @@ class Database:
     async def get_all_users(self):
         return self.col.find({})
     
-
     async def delete_user(self, user_id):
         await self.col.delete_many({'id': int(user_id)})
-
 
     async def get_banned(self):
         users = self.col.find({'ban_status.is_banned': True})
@@ -131,18 +122,14 @@ class Database:
         b_users = [user['id'] async for user in users]
         return b_users, b_chats
     
-
-
     async def add_chat(self, chat, title):
         chat = self.new_group(chat, title)
         await self.grp.insert_one(chat)
     
-
     async def get_chat(self, chat):
         chat = await self.grp.find_one({'id':int(chat)})
         return False if not chat else chat.get('chat_status')
     
-
     async def re_enable_chat(self, id):
         chat_status=dict(
             is_disabled=False,
@@ -153,7 +140,6 @@ class Database:
     async def update_settings(self, id, settings):
         await self.grp.update_one({'id': int(id)}, {'$set': {'settings': settings}})
         
-    
     async def get_settings(self, id):
         default = {
             'button': SINGLE_BUTTON,
@@ -177,7 +163,6 @@ class Database:
             return chat.get('settings', default)
         return default
     
-
     async def disable_chat(self, chat, reason="No Reason"):
         chat_status=dict(
             is_disabled=True,
@@ -185,15 +170,12 @@ class Database:
             )
         await self.grp.update_one({'id': int(chat)}, {'$set': {'chat_status': chat_status}})
     
-
     async def total_chat_count(self):
         count = await self.grp.count_documents({})
         return count
     
-
     async def get_all_chats(self):
         return self.grp.find({})
-
 
     async def get_db_size(self):
         return (await self.db.command("dbstats"))['dataSize']
@@ -201,15 +183,12 @@ class Database:
     async def get_user(self, user_id):
         user_data = await self.users.find_one({"id": user_id})
         return user_data
-    async def update_user(self, user_data):
-        await self.users.update_one({"id": user_data["id"]}, {"$set": user_data}, upsert=True)
 
     async def has_premium_access(self, user_id):
         user_data = await self.get_user(user_id)
         if user_data:
             expiry_time = user_data.get("expiry_time")
             if expiry_time is None:
-                # User previously used the free trial, but it has ended.
                 return False
             elif isinstance(expiry_time, datetime.datetime) and datetime.datetime.now() <= expiry_time:
                 return True
@@ -222,7 +201,6 @@ class Database:
 
     async def update_one(self, filter_query, update_data):
         try:
-            # Assuming self.client and self.users are set up properly
             result = await self.users.update_one(filter_query, update_data)
             return result.matched_count == 1
         except Exception as e:
@@ -231,7 +209,8 @@ class Database:
 
     async def get_expired(self, current_time):
         expired_users = []
-        if data := self.users.find({"expiry_time": {"$lt": current_time}}):
+        data = self.users.find({"expiry_time": {"$lt": current_time}})
+        if data is not None:
             async for user in data:
                 expired_users.append(user)
         return expired_users
@@ -248,11 +227,15 @@ class Database:
         return False
 
     async def give_free_trial(self, user_id):
-        #await set_free_trial_status(user_id)
-        user_id = user_id
         seconds = 5*60         
         expiry_time = datetime.datetime.now() + datetime.timedelta(seconds=seconds)
         user_data = {"id": user_id, "expiry_time": expiry_time, "has_free_trial": True}
         await self.users.update_one({"id": user_id}, {"$set": user_data}, upsert=True)
         
 db = Database(DATABASE_URI, DATABASE_NAME)
+
+# Re-expose methods for backward compatibility
+referal_add_user = db.referal_add_user
+get_referal_all_users = db.get_referal_all_users
+get_referal_users_count = db.get_referal_users_count
+delete_all_referal_users = db.delete_all_referal_users
