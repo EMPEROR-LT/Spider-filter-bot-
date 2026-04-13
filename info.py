@@ -6,6 +6,7 @@ from os import environ
 from Script import script 
 
 id_pattern = re.compile(r'^.\d+$')
+
 def is_enabled(value, default):
     if value.lower() in ["true", "yes", "1", "enable", "y"]:
         return True
@@ -14,15 +15,21 @@ def is_enabled(value, default):
     else:
         return default
 
+def get_int(key, default):
+    value = environ.get(key)
+    if value and value.isdigit():
+        return int(value)
+    return default
+
 # Bot information
 SESSION = environ.get('SESSION', 'Media_search')
-API_ID = int(environ.get('API_ID', '25256497'))
+API_ID = get_int('API_ID', 25256497)
 API_HASH = environ.get('API_HASH', '7640ddb9e5b9ff423adcab5dd81ae2f2')
 BOT_TOKEN = environ.get('BOT_TOKEN', "8278402505:AAFbQNlETqNaRlunq4nPhdojhRDIhYr9i0c")
 
 # Bot settings
-CACHE_TIME = int(environ.get('CACHE_TIME', 300))
-USE_CAPTION_FILTER = bool(environ.get('USE_CAPTION_FILTER', True))
+CACHE_TIME = get_int('CACHE_TIME', 300)
+USE_CAPTION_FILTER = is_enabled(environ.get('USE_CAPTION_FILTER', 'True'), True)
 BOT_START_TIME = 'time'
 
 PICS = (environ.get('PICS', 'https://telegra.ph/file/3216b77d353f4812ec654.jpg https://telegra.ph/file/4b80881be0a7d508a0c85.jpg https://telegra.ph/file/79f803e33a91f2c985a05.jpg https://telegra.ph/file/aac100d4b98836b05fbd3.jpg')).split() #SAMPLE PIC
@@ -33,10 +40,10 @@ SUBSCRIPTION = (environ.get('SUBSCRIPTION', 'https://telegra.ph/file/734170f40b8
 CODE = (environ.get('CODE', 'https://telegra.ph/file/72f425007b22d28bd935e.jpg'))
 
 # Admins, Channels & Users
-PREMIUM_AND_REFERAL_MODE = bool(environ.get('PREMIUM_AND_REFERAL_MODE', True)) # Set Ture Or False
+PREMIUM_AND_REFERAL_MODE = is_enabled(environ.get('PREMIUM_AND_REFERAL_MODE', 'True'), True)
 
 # If PREMIUM_AND_REFERAL_MODE is True Then Fill Below Variable, If Flase Then No Need To Fill.
-REFERAL_COUNT = int(environ.get('REFERAL_COUNT', '5')) # number of referal count
+REFERAL_COUNT = get_int('REFERAL_COUNT', 5)
 REFERAL_PREMEIUM_TIME = environ.get('REFERAL_PREMEIUM_TIME', '1month')
 ADMINS = [int(admin) if id_pattern.search(admin) else admin for admin in environ.get('ADMINS', '7597291420').split()]
 CHANNELS = [int(ch) if id_pattern.search(ch) else ch for ch in environ.get('CHANNELS', '').split()]
@@ -51,7 +58,7 @@ support_chat_id = environ.get('SUPPORT_CHAT_ID', '-1002803456095')
 reqst_channel = environ.get('REQST_CHANNEL_ID', '-1002571645255')
 REQST_CHANNEL = int(reqst_channel) if reqst_channel and id_pattern.search(reqst_channel) else None
 SUPPORT_CHAT_ID = int(support_chat_id) if support_chat_id and id_pattern.search(support_chat_id) else None
-NO_RESULTS_MSG = bool(environ.get("NO_RESULTS_MSG", True))
+NO_RESULTS_MSG = is_enabled(environ.get("NO_RESULTS_MSG", "True"), True)
 
 # MongoDB information
 DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://ltarak570_db_user:zAIRPn92DgjoVZsl@cluster0.bmrg5lf.mongodb.net/?appName=Cluster0")
@@ -59,7 +66,7 @@ DATABASE_NAME = environ.get('DATABASE_NAME', "Cluster0")
 COLLECTION_NAME = environ.get('COLLECTION_NAME', 'emperor')
 
 # Others
-VERIFY = bool(environ.get('VERIFY', False)) # Verification On ( True ) / Off ( False )
+VERIFY = is_enabled(environ.get('VERIFY', 'False'), False)
 HOWTOVERIFY = environ.get('HOWTOVERIFY', 'https://t.me/Verifying5754/9')
 PMFILTER = is_enabled(environ.get('PMFILTER', "True"), True)
 G_FILTER = is_enabled(environ.get("G_FILTER", "True"), True)
@@ -67,7 +74,7 @@ SHORTLINK_URL = environ.get('SHORTLINK_URL', 'Onepageyam.com')
 SHORTLINK_API = environ.get('SHORTLINK_API', '')
 SECOND_SHORTLINK_URL = environ.get('SECOND_SHORTLINK_URL', 'Onepageyam.com')
 SECOND_SHORTLINK_API = environ.get('SECOND_SHORTLINK_API', '')
-IS_SHORTLINK = bool(environ.get('IS_SHORTLINK', True))
+IS_SHORTLINK = is_enabled(environ.get('IS_SHORTLINK', 'True'), True)
 DELETE_CHANNELS = [int(dch) if id_pattern.search(dch) else dch for dch in environ.get('DELETE_CHANNELS', '0').split()]
 MAX_B_TN = environ.get("MAX_B_TN", "5")
 MAX_BTN = is_enabled((environ.get('MAX_BTN', "True")), True)
@@ -75,7 +82,7 @@ PORT = environ.get("PORT", "8080")
 GRP_LNK = environ.get('GRP_LNK', 'https://t.me/+ps2An00KwZYwNTRl')
 CHNL_LNK = environ.get('CHNL_LNK', 'https://t.me/hbbotz')
 TUTORIAL = environ.get('TUTORIAL', 'https://t.me/Verifying5754/9')
-IS_TUTORIAL = bool(environ.get('IS_TUTORIAL', True))
+IS_TUTORIAL = is_enabled(environ.get('IS_TUTORIAL', 'True'), True)
 MSG_ALRT = environ.get('MSG_ALRT', 'Wʜᴀᴛ Aʀᴇ Yᴏᴜ Lᴏᴏᴋɪɴɢ Aᴛ ?')
 LOG_CHANNEL = int(environ.get('LOG_CHANNEL', '-1002905473240'))
 SUPPORT_CHAT = environ.get('SUPPORT_CHAT', '+r9ArDaaCETE0OGU9')
@@ -97,7 +104,7 @@ PROTECT_CONTENT = is_enabled((environ.get('PROTECT_CONTENT', "False")), False)
 PUBLIC_FILE_STORE = is_enabled((environ.get('PUBLIC_FILE_STORE', "True")), True)
 
 # add premium logs channel id
-PREMIUM_LOGS = int(environ.get('PREMIUM_LOGS', '3174376872'))
+PREMIUM_LOGS = get_int('PREMIUM_LOGS', 3174376872)
 
 LANGUAGES = ["malayalam", "mal", "tamil", "tam" ,"english", "eng", "hindi", "hin", "telugu", "tel", "kannada", "kan"]
 
